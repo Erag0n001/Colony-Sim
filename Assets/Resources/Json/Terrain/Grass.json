@@ -1,0 +1,6 @@
+{
+  "IdName": "Grass",
+  "Name": "Grass",
+  "WalkModifier": 1.0,
+  "TexturePath": "Textures/Terrain/Grass"
+}

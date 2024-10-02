@@ -1,0 +1,6 @@
+{
+  "IdName": "Stone",
+  "Name": "Stone",
+  "WalkModifier": 0.5,
+  "TexturePath": "Textures/Terrain/Stone"
+}

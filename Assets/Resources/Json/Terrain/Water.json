@@ -1,0 +1,6 @@
+{
+  "IdName": "Water",
+  "Name": "Water",
+  "WalkModifier": 0.0,
+  "TexturePath": "Textures/Terrain/Water"
+}

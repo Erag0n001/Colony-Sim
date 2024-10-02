@@ -1,0 +1,6 @@
+{
+  "IdName": "Enemy",
+  "Name": "Enemy",
+  "WalkModifier": 1.0,
+  "TexturePath": "Textures/Terrain/Enemy"
+}
