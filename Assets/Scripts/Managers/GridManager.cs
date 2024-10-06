@@ -7,30 +7,17 @@ using UnityEngine.Tilemaps;
 using Random = System.Random;
 namespace Client
 {
-    public partial class GridManager : MonoBehaviour
+    public static class GridManager
     {
-        public static GridManager instance;
 
         public static GameObject tileObject;
 
-        public Tile[] tileSetTiles;
+        public static Tile[] tileSetTiles;
 
-        public void Awake()
-        {
-            AssetManager.LoadAllAssets();
-        }
-        public void Start()
-        {
-            GridManager.instance = this;
-
-            GenerateGrid();
-        }
-
-        public void GenerateGrid(int width = 250, int height = 250, string seed = "")
+        public static void GenerateGrid(int width = 250, int height = 250, string seed = "")
         {
             Random rand = new Random();
             if (seed == "") seed = rand.Next(0,9999999).ToString();
-            Printer.Log(seed);
             Map map = new Map(seed, new Vector2(width, height));
             map.terrains = new List<TerrainBase>() { TerrainBase.FindTerrainByID("Grass"), TerrainBase.FindTerrainByID("Stone") };
             Dictionary<Vector3Int, TileData> tiles = new Dictionary<Vector3Int, TileData>();
@@ -62,7 +49,7 @@ namespace Client
             {
                 tile.CacheNeighbors();
             }
-            CreatureManager.instance.SpawnNewCreature();
+            CreatureManager.SpawnNewCreature();
         }
 
         private static TileData CalculateTile(int x, int y, Map map, Vector2 offset = new Vector2())
@@ -90,17 +77,17 @@ namespace Client
             }
         }
 
-        public Tilemap CreateTileMap() 
+        public static Tilemap CreateTileMap() 
         {
             GameObject tileMapObject = new GameObject();
-            tileMapObject.transform.SetParent(this.transform.GetChild(0));
+            tileMapObject.transform.SetParent(GameObject.Find("GridManager/Grid").transform);
             tileMapObject.transform.position = new Vector3(0, 0, 0);
             Tilemap tilemap = tileMapObject.AddComponent<Tilemap>();
             tileMapObject.AddComponent<TilemapRenderer>();
             return tilemap;
         }
 
-        public Tile[] GetTiles(Map map) 
+        public static Tile[] GetTiles(Map map) 
         {
             List<Tile> result = new List<Tile>();
             foreach (TerrainBase data in map.terrains)

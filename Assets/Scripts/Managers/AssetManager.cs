@@ -4,7 +4,6 @@ using System.IO;
 using System.Resources;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using static UnityEditor.U2D.ScriptablePacker;
 
 namespace Client 
 {

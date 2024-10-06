@@ -11,37 +11,18 @@ namespace Client
     public static class MainManager
     {
         public static Map currentMap;
-        public static List<GameObject> currentPackedScene = new List<GameObject>();
 
-        public static float deltaTime = 0f;
+        public static int framePerSecondTarget = 120;
 
-        private static int tickCount = 0;
-        public static GameObject FindPackedSceneByName(string name) 
+        public static void Startup() 
         {
-            return currentPackedScene.Where( S => S.name == name).FirstOrDefault();
-        }
-
-        public static void Tick() 
-        {
-            while (true)
+            Application.targetFrameRate = framePerSecondTarget;
+            AssetManager.LoadAllAssets();
+            GridManager.GenerateGrid();
+            Task.Run(() =>
             {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                try { CreatureManager.instance.TickAllCreatures(); } catch (Exception e) { Printer.LogError($"Error ticking creatures: {e}"); }
-                stopwatch.Stop();
-                deltaTime = stopwatch.ElapsedMilliseconds;
-
-                if (tickCount == 50)
-                {
-                    LongTick();
-                    tickCount = 0;
-                }
-                tickCount++;
+                TickManager.Paused = false;
+            });
             }
-        }
-
-        public static void LongTick() 
-        {
-        }
     }
 }

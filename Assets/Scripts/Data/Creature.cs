@@ -20,10 +20,11 @@ namespace Client
             speed = data.BaseSpeed;
         }
 
-        public void Tick() 
+        public void Tick(float delta) 
         {
 
         }
+
         public List<TileData> FindPathToDestination(Vector3Int start, Vector3Int end) 
         {
             return FindPathToDestination(MainManager.currentMap.GetTileFromVector(start), MainManager.currentMap.GetTileFromVector(end));

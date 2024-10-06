@@ -8,6 +8,6 @@ public class Pathfinding : MonoBehaviour
 {
     public void PlayButtonPressed()
     {
-        CreatureManager.instance.SpawnNewCreature();
+        CreatureManager.SpawnNewCreature();
     }
 }

@@ -8,6 +8,6 @@ public class CreateNewMapp : MonoBehaviour
     public void PlayButtonPressed()
     {
         Printer.LogWarning("test");
-        GridManager.instance.GenerateGrid();
+        GridManager.GenerateGrid();
     }
 }
