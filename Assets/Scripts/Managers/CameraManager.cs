@@ -30,15 +30,27 @@ namespace Client
             if (player.transform.position.y + y >= 50) y = 0;
             movement = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             Camera mainCamera = player.GetComponent<Camera>();
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+            if (Input.GetKey(KeyCode.LeftControl))
             {
-                mainCamera.orthographicSize -= 1f;
-            }
-            if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    MainManager.currentMap.ActiveLayer++;
+                }
+                if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    MainManager.currentMap.ActiveLayer--;
+                }
+            } else 
             {
-                mainCamera.orthographicSize += 1f;
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    mainCamera.orthographicSize -= 1f;
+                }
+                if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    mainCamera.orthographicSize += 1f;
+                }
             }
-
 
             mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 1f, 100f);
             player.transform.Translate(movement * sensitivity *  Time.deltaTime);

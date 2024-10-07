@@ -11,13 +11,13 @@ namespace Client
         void Start()
         {
             textComp = gameObject.GetComponent<TextMeshProUGUI>();
-            //InvokeRepeating()
+            InvokeRepeating(nameof(GetFPS), 1, 1);
         }
 
         // Update is called once per frame
-        void Update()
+        void GetFPS()
         {
-            textComp.text = TickManager.tickPerSecond.ToString() + "/" + TickManager.tickPerSecondTarget;
+            textComp.text = ((int)1 / Time.unscaledDeltaTime).ToString();
         }
     }
 }

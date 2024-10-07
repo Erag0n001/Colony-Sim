@@ -10,30 +10,59 @@ namespace Client
     public class Map
     {
         public Vector2 size;
-        public Dictionary<Vector3Int, TileData> tiles = new Dictionary<Vector3Int, TileData>();
-        public Dictionary<Vector3Int, Creature> creatures = new Dictionary<Vector3Int, Creature>();
+        public int zLevels;
+        public Dictionary<int,MapLayer> layers = new Dictionary<int,MapLayer>();
         public readonly int seed;
         public List<TerrainBase> terrains;
-        public Tilemap tilemap;
-        public Map(string seed, Vector2 size)
+
+        public Tile[] tileSetTiles;
+
+        private int activeLayer;
+        public int ActiveLayer 
+        {
+            get 
+            {
+                return activeLayer;
+            }
+            set 
+            {if(value >= 0 && value < layers.Count)
+                {
+                    Printer.LogWarning(value.ToString());
+                    Printer.Log(activeLayer.ToString());
+                    layers[activeLayer].tilemap.gameObject.SetActive(false);
+                    activeLayer = value;
+                    layers[value].tilemap.gameObject.SetActive(true);
+                }
+            } 
+        }
+        public Map(string seed, Vector2 size, int zLevels)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(seed);
             this.seed = BitConverter.ToInt32(bytes, 0);
             this.size = size;
+            this.zLevels = zLevels;
         }
-        public void UpdateTerrain(TileData[] tiles) 
-        {
-            Action todo = () =>
-            {
-                foreach (TileData tile in tiles)
-                {
-                    Tile newTile = AssetManager.allTiles.Where(T => tile.type.IdName == T.name).First();
 
-                    tilemap.SetTile(tile.position, newTile);
-                }
-            };
-            UnityMainThreadDispatcher.instance.Enqueue(todo);
+        public TileData GetTileFromVector(Position vector)
+        {
+            MapLayer layer;
+            layers.TryGetValue(vector.z, out layer);
+            if (layer != null)
+            {
+                return layer.tiles.TryGetValue(vector, out TileData tile) ? tile : null;
+            } else 
+            {
+                Printer.LogError($"Layer {vector.z} did not exist");
+            }
+            return null;
         }
-        public TileData GetTileFromVector(Vector3Int vector) => tiles.TryGetValue(vector, out TileData tile) ? tile : null;
+
+        public void UpdateTerrain(TileData[] tiles)
+        {
+            foreach (TileData tile in tiles)
+            {
+                layers.TryGetValue(tile.position.z, out MapLayer mapLayer);
+            }
+        }
     }
 }

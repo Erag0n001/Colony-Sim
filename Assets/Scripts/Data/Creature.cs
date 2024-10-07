@@ -7,9 +7,9 @@ namespace Client
 {
     public class Creature
     {
-        public Vector3Int position;
+        public Position position;
         public Vector3 objectPosition;
-        public Vector3Int targetPos;
+        public Position targetPos;
         public readonly CreatureBase type;
         public float speed;
 
@@ -25,7 +25,7 @@ namespace Client
 
         }
 
-        public List<TileData> FindPathToDestination(Vector3Int start, Vector3Int end) 
+        public List<TileData> FindPathToDestination(Position start, Position end) 
         {
             return FindPathToDestination(MainManager.currentMap.GetTileFromVector(start), MainManager.currentMap.GetTileFromVector(end));
         }

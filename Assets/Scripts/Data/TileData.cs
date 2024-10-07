@@ -7,12 +7,12 @@ namespace Client
     [Serializable]
     public class TileData
     {
-        [NonSerialized] private static readonly List<Vector3Int> Directions = new List<Vector3Int>() {
-            new Vector3Int(0, 1, 0), new Vector3Int(-1, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(1, 0, 0),
-            new Vector3Int(-1, 1, 0), new Vector3Int(-1, 1,0), new Vector3Int(1, -1, 0), new Vector3Int(1, 1, 0)
+        [NonSerialized] private static readonly List<Position> Directions = new List<Position>() {
+            new Position(0, 1, 0), new Position(-1, 0, 0), new Position(0, -1, 0), new Position(1, 0, 0),
+            new Position(-1, 1, 0), new Position(-1, 1,0), new Position(1, -1, 0), new Position(1, 1, 0)
         };
 
-        public Vector3Int position = new Vector3Int();
+        public Position position = new Position();
         public int id;
         public float wetness;
         public float elevation;
@@ -39,16 +39,16 @@ namespace Client
                 neightbors.Add(tile);
             }
         }
-        public float GetRawDistance(Vector3Int other) 
+        public float GetRawDistance(Position other) 
         {
-            Vector3Int distance = new Vector3Int(Mathf.Abs((int)(position.x - other.x)),Mathf.Abs((int)(position.y - other.y)));
+            Position distance = new Position(Mathf.Abs((int)(position.x - other.x)),Mathf.Abs((int)(position.y - other.y)));
             return distance.x + distance.y;
         }
 
-        public float GetDistance(Vector3Int other) 
+        public float GetDistance(Position other) 
         {
             float cost = 0f;
-            Vector3Int simulatedTile = new Vector3Int(position.x, position.y, 0);
+            Position simulatedTile = new Position(position.x, position.y, 0);
             float diagonalCostMultiplier = (float)Math.Sqrt(2);
             while (simulatedTile != other) 
             {

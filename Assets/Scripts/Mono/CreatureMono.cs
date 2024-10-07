@@ -14,15 +14,15 @@ namespace Client
 
         public float count;
 
-        public Vector3Int realPosition => creature.position;
+        public Vector3Int RealPosition => creature.position.ToVector3Int();
 
-        public Vector3Int targetPosition => creature.targetPos;
+        public Vector3Int TargetPosition => creature.targetPos.ToVector3Int();
 
         public bool isMoving;
 
         public void Update()
         {
-            if(realPosition != targetPosition && isMoving == false) 
+            if(RealPosition != TargetPosition && isMoving == false) 
             {
                 StartCoroutine(Lerp());
             }
@@ -30,14 +30,14 @@ namespace Client
 
         public IEnumerator Lerp() 
         {
-            Vector3 startRot = realPosition;
+            Vector3 startRot = RealPosition;
 
             float currentTime = 0f;
             float endTime = 0.250f;
             while (currentTime < endTime)
             {
                 currentTime += Time.deltaTime;
-                transform.position = Vector3.Lerp(startRot, targetPosition, currentTime / endTime);
+                transform.position = Vector3.Lerp(startRot, TargetPosition, currentTime / endTime);
                 yield return null;
             }
         }

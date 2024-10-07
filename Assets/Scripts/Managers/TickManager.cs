@@ -53,15 +53,17 @@ namespace Client
 
                     if (msElapsed >= nextTickTime)
                     {
-                        foreach (Creature creature in MainManager.currentMap.creatures.Values)
+                        foreach (MapLayer layer in MainManager.currentMap.layers.Values)
                         {
-                            try { creature.Tick(delta); }
-                            catch (Exception e)
+                            foreach (Creature creature in layer.creatures.Values)
                             {
-                                Printer.LogError($"Error ticking {creature.type.IdName} with name {creature.displayName}\n{e}");
+                                try { creature.Tick(delta); }
+                                catch (Exception e)
+                                {
+                                    Printer.LogError($"Error ticking {creature.type.IdName} with name {creature.displayName}\n{e}");
+                                }
                             }
                         }
-
                         if (tickCount == 50)
                         {
                             LongTick();
