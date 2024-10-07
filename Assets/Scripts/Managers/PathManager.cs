@@ -12,8 +12,11 @@ namespace Client
         public static readonly string json = "Json";
         public static readonly string jsonCreatures = Path.Combine(json, "Creature");
         public static readonly string jsonTerrain = Path.Combine(json, "Terrain");
+        public static readonly string jsonBuilding = Path.Combine(json, "Building");
+
         public static readonly string textures = "Textures";
         public static readonly string texturesCreatures = Path.Combine(textures, "Creature");
         public static readonly string texturesTerrain = Path.Combine(textures, "Terrain");
+        public static readonly string texturesBuilding = Path.Combine(textures, "Building");
     }
 }

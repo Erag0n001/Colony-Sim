@@ -12,11 +12,12 @@ namespace Client
     {
         public static Map currentMap;
 
-        public static int framePerSecondTarget = 10000;
+        public static int framePerSecondTarget = -1;
 
         public static void Startup() 
         {
             Application.targetFrameRate = framePerSecondTarget;
+            QualitySettings.vSyncCount = 0;
             AssetManager.LoadAllAssets();
             GridManager.GenerateMap();
             Task.Run(() =>

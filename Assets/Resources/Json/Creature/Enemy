@@ -1,7 +1,0 @@
-{
-  "DisplayName": "Enemy",
-  "IdName": "Enemy",
-  "Type": "Enemy",
-  "BaseSpeed": 5.0,
-  "TexturePath": "Textures/Creature/Enemy"
-}

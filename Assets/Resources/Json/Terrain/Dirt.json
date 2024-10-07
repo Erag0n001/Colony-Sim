@@ -1,0 +1,6 @@
+{
+  "IdName": "Dirt",
+  "Name": "Dirt",
+  "WalkModifier": 1.0,
+  "TexturePath": "Textures/Terrain/Dirt"
+}

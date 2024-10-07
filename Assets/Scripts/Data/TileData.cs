@@ -14,8 +14,11 @@ namespace Client
 
         public Position position = new Position();
         public int id;
+
         public float wetness;
         public float elevation;
+
+
         public float WalkSpeed => type.WalkModifier * walkspeedmultipier;
         public float walkspeedmultipier = 1;
         public TerrainBase type;
@@ -32,11 +35,20 @@ namespace Client
             this.type = type;
             this.MainType = type;
         }
-        public void CacheNeighbors() 
+        public void CacheNeighbors(MapLayer layer = null) 
         {
-            foreach (TileData tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir)).Where(tile => tile != null))
+            if (layer != null)
             {
-                neightbors.Add(tile);
+                foreach (TileData tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir, layer)).Where(tile => tile != null))
+                {
+                    neightbors.Add(tile);
+                }
+            } else 
+            {
+                foreach (TileData tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir)).Where(tile => tile != null))
+                {
+                    neightbors.Add(tile);
+                }
             }
         }
         public float GetRawDistance(Position other) 

@@ -57,6 +57,11 @@ namespace Client
             return null;
         }
 
+        public TileData GetTileFromVector(Position vector, MapLayer layer)
+        {
+            return layer.tiles.TryGetValue(vector, out TileData tile) ? tile : null;
+        }
+
         public void UpdateTerrain(TileData[] tiles)
         {
             foreach (TileData tile in tiles)

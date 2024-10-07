@@ -11,6 +11,7 @@ namespace Editor {
         {
             UpdateTerrain();
             UpdateCreature();
+            UpdateBuildings();
         }
         public static void UpdateTerrain()
         {
@@ -28,6 +29,15 @@ namespace Editor {
             {
                 CreatureBase creature = Serializer.SerializeFromString<CreatureBase>(json.text);
                 Serializer.SerializeToFile(Path.Combine(pathResources, PathManager.jsonCreatures, creature.IdName + ".json"), creature);
+            }
+        }
+        public static void UpdateBuildings()
+        {
+            TextAsset[] jsonRaw = Resources.LoadAll<TextAsset>(PathManager.jsonBuilding);
+            foreach (TextAsset json in jsonRaw)
+            {
+                BuildingBase building = Serializer.SerializeFromString<BuildingBase>(json.text);
+                Serializer.SerializeToFile(Path.Combine(pathResources, PathManager.jsonBuilding, building.IdName + ".json"), building);
             }
         }
     }
