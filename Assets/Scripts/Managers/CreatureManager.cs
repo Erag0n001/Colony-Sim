@@ -23,6 +23,8 @@ namespace Client
             gameobject.transform.position = creatureData.position.ToVector3Int() + new Vector3(0,0,-1);
             gameobject.transform.rotation = new Quaternion(-90,0,0,90);
             gameobject.transform.SetParent(GameObject.Find("CreatureManager").transform);
+
+            map.layers[0].creatures.Add(creatureData.position, creatureData);
         }
     }
 }

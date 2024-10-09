@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace Client
 {
@@ -13,12 +12,9 @@ namespace Client
         public int zLevels;
         public Dictionary<int,MapLayer> layers = new Dictionary<int,MapLayer>();
         public readonly int seed;
-        public List<TerrainBase> terrains;
 
         public Vector2 offset;
         public float scale;
-
-        public Tile[] tileSetTiles;
 
         public BiomeBase biome;
 
@@ -32,8 +28,6 @@ namespace Client
             set 
             {if(value >= 0 && value < layers.Count)
                 {
-                    Printer.LogWarning(value.ToString());
-                    Printer.Log(activeLayer.ToString());
                     layers[activeLayer].tilemap.gameObject.SetActive(false);
                     activeLayer = value;
                     layers[value].tilemap.gameObject.SetActive(true);
@@ -48,13 +42,13 @@ namespace Client
             this.zLevels = zLevels;
         }
 
-        public TileData GetTileFromVector(Position vector)
+        public MapTile GetTileFromVector(Position vector)
         {
             MapLayer layer;
             layers.TryGetValue(vector.z, out layer);
             if (layer != null)
             {
-                return layer.tiles.TryGetValue(vector, out TileData tile) ? tile : null;
+                return layer.GetTileFromVector(vector);
             } else 
             {
                 Printer.LogError($"Layer {vector.z} did not exist");
@@ -62,16 +56,25 @@ namespace Client
             return null;
         }
 
-        public TileData GetTileFromVector(Position vector, MapLayer layer)
+        public MapTile GetTileFromVector(Position vector, MapLayer layer)
         {
-            return layer.tiles.TryGetValue(vector, out TileData tile) ? tile : null;
+            return layer.tiles.TryGetValue(vector, out MapTile tile) ? tile : null;
         }
 
-        public void UpdateTerrain(TileData[] tiles)
+        public void UpdateTerrain(MapTile[] tiles)
         {
-            foreach (TileData tile in tiles)
+            foreach (MapTile tile in tiles)
             {
                 layers.TryGetValue(tile.position.z, out MapLayer mapLayer);
+                mapLayer.UpdateTerrain(new MapTile[] {tile});
+            }
+        }
+
+        public void UpdateAllTerrain() 
+        {
+            foreach(MapLayer layer in layers.Values) 
+            {
+                layer.UpdateTerrain(layer.tiles.Values.ToArray());
             }
         }
     }

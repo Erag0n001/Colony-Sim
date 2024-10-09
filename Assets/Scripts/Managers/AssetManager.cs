@@ -22,7 +22,7 @@ namespace Client
             CreatureManager.creatureObject = Resources.Load<GameObject>("Creature");
             TerrainBase.terrainList = LoadAllTerrain();
             CreatureBase.creatureList = LoadAllCreatures();
-            Biome.biomeList = LoadAllBiomes();
+            BiomeBase.biomeList = LoadAllBiomes();
         }
 
         private static TerrainBase[] LoadAllTerrain()

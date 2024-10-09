@@ -12,20 +12,19 @@ namespace Client
         public Map map;
         public readonly int ZLevel;
 
-        public Dictionary<Position, TileData> tiles = new Dictionary<Position, TileData>();
+        public Dictionary<Position, MapTile> tiles = new Dictionary<Position, MapTile>();
         public Dictionary<Position, Creature> creatures = new Dictionary<Position, Creature>();
-
         public Tilemap tilemap;
 
-        public TileData GetTileFromVector(Position vector) => tiles.TryGetValue(vector, out TileData tile) ? tile : null;
+        public MapTile GetTileFromVector(Position vector) => tiles.TryGetValue(vector, out MapTile tile) ? tile : null;
 
-        public void UpdateTerrain(TileData[] tiles)
+        public void UpdateTerrain(MapTile[] tiles)
         {
             Action todo = () =>
             {
-                foreach (TileData tile in tiles)
+                foreach (MapTile tile in tiles)
                 {
-                    Tile newTile = AssetManager.allTiles.Where(T => tile.type.IdName == T.name).First();
+                    Tile newTile = AssetManager.allTiles.Where(T => tile.baseType.IdName == T.name).First();
 
                     tilemap.SetTile(tile.position.ToVector3Int(), newTile);
                 }

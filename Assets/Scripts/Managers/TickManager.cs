@@ -60,7 +60,7 @@ namespace Client
                                 try { creature.Tick(delta); }
                                 catch (Exception e)
                                 {
-                                    Printer.LogError($"Error ticking {creature.type.IdName} with name {creature.displayName}\n{e}");
+                                    Printer.LogError($"Error ticking {creature.baseType.IdName} with name {creature.displayName}\n{e}");
                                 }
                             }
                         }

@@ -10,13 +10,13 @@ namespace Client
         public Position position;
         public Vector3 ObjectPosition => position.ToVector3();
         public Position targetPos;
-        public readonly CreatureBase type;
+        public readonly CreatureBase baseType;
         public float speed;
 
         public string displayName;
         public Creature(CreatureBase data) 
         {
-            this.type = data;
+            this.baseType = data;
             speed = data.BaseSpeed;
         }
 
@@ -25,60 +25,74 @@ namespace Client
 
         }
 
-        public List<TileData> FindPathToDestination(Position start, Position end) 
+        public List<MapTile> FindPathToDestination(Position start, Position end) 
         {
             return FindPathToDestination(MainManager.currentMap.GetTileFromVector(start), MainManager.currentMap.GetTileFromVector(end));
         }
-        public List<TileData> FindPathToDestination(TileData start, TileData end)
+        public List<MapTile> FindPathToDestination(MapTile start, MapTile end)
         {
-            List<TileData> toSearch = new List<TileData>() { start };
-            List<TileData> searched = new List<TileData>();
-            if (end.WalkSpeed < 0.05) 
+            if (end.WalkSpeed < 0.05 || start.WalkSpeed < 0.05)
             {
-                return null;
+                return null; // Early exit if start or end is not walkable
             }
-            while (toSearch.Any())
+
+            PathfindingInfo info = new PathfindingInfo();
+            info.toSearch.Add(start);
+            info.gCost[start] = 0;
+            info.hCost[start] = start.GetDistance(end.position);
+            info.fCost[start] = info.hCost[start]; // Set fCost for start
+
+            while (info.toSearch.Count > 0)
             {
-                TileData current = toSearch.First();
-                foreach (TileData t in toSearch)
-                {
-                    if (t.pathfindingF < current.pathfindingF || t.pathfindingF == current.pathfindingF && t.pathfindingH < current.pathfindingH) current = t;
-                }
-                searched.Add(current);
-                toSearch.Remove(current);
+                // Get the tile with the lowest fCost
+                MapTile current = info.toSearch.OrderBy(t => info.fCost[t]).First();
+
                 if (current.position == end.position)
                 {
-                    TileData currentPathTile = end;
-                    List<TileData> path = new List<TileData>();
-                    while (currentPathTile != start)
-                    {
-                        path.Add(currentPathTile);
-                        currentPathTile.type = TerrainBase.FindTerrainByID("Enemy");
-                        currentPathTile = currentPathTile.connection;
-                    }
-                    path.Add(start);
-                    path.Reverse();
-                    MainManager.currentMap.UpdateTerrain(path.ToArray());
-                    return path;
+                    // Build the path back to start
+                    return BuildPath(start, end, info);
                 }
-                foreach(TileData neightbor in current.neightbors.Where(T => T.WalkSpeed > 0.05 && !searched.Contains(T))) 
-                {
-                    bool inSearch = toSearch.Contains(neightbor);
 
-                    float costToNeighbor = current.pathfindingG + current.GetDistance(neightbor.position);
-                    if(!inSearch || costToNeighbor < neightbor.pathfindingG) 
+                info.toSearch.Remove(current);
+                info.searched.Add(current);
+
+                foreach (MapTile neighbor in current.neighbor.Where(t => t.WalkSpeed > 0.05 && !info.searched.Contains(t)))
+                {
+                    float costToNeighbor = info.gCost[current] + current.GetDistance(neighbor.position);
+
+                    // Check if neighbor is not in toSearch or found a better path
+                    if (!info.toSearch.Contains(neighbor) || costToNeighbor < info.gCost[neighbor])
                     {
-                        neightbor.pathfindingG = costToNeighbor;
-                        neightbor.connection = current;
-                        if (!inSearch)
+                        info.gCost[neighbor] = costToNeighbor;
+                        info.hCost[neighbor] = neighbor.GetDistance(end.position);
+                        info.fCost[neighbor] = info.gCost[neighbor] + info.hCost[neighbor];
+                        info.connection[neighbor] = current; // Set connection
+
+                        if (!info.toSearch.Contains(neighbor))
                         {
-                            neightbor.pathfindingH = neightbor.GetDistance(end.position);
-                            toSearch.Add(neightbor);
+                            info.toSearch.Add(neighbor);
                         }
                     }
                 }
             }
-            return null;
+            return null; // No path found
+        }
+
+        private List<MapTile> BuildPath(MapTile start, MapTile end, PathfindingInfo info)
+        {
+            List<MapTile> path = new List<MapTile>();
+            MapTile current = end;
+
+            while (current != start)
+            {
+                path.Add(current);
+                current.baseType = TerrainBase.FindTerrainByID("Enemy");
+                current = info.connection[current]; // Move to the connected tile
+            }
+            path.Add(start);
+            path.Reverse();
+            MainManager.currentMap.UpdateTerrain(path.ToArray());
+            return path;
         }
     }
 }

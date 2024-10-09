@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Client
 {
     [Serializable]
-    public class TileData
+    public class MapTile
     {
         [NonSerialized] private static readonly List<Position> Directions = new List<Position>() {
             new Position(0, 1, 0), new Position(-1, 0, 0), new Position(0, -1, 0), new Position(1, 0, 0),
@@ -15,35 +15,30 @@ namespace Client
         public Position position = new Position();
         public int id;
 
-        public float WalkSpeed => type.WalkModifier * walkspeedmultipier;
+        public float WalkSpeed => baseType.WalkModifier * walkspeedmultipier;
         public float walkspeedmultipier = 1;
-        public TerrainBase type;
+        public TerrainBase baseType;
         public readonly TerrainBase MainType;
-        public List<TileData> neightbors = new List<TileData>();
+        public List<MapTile> neighbor = new List<MapTile>();
 
-        public float pathfindingF = 0f;
-        public float pathfindingH = 0f;
-        public float pathfindingG = 0f;
-        public TileData connection;
-
-        public TileData(TerrainBase type) 
+        public MapTile(TerrainBase type) 
         {
-            this.type = type;
+            this.baseType = type;
             this.MainType = type;
         }
         public void CacheNeighbors(MapLayer layer = null) 
         {
             if (layer != null)
             {
-                foreach (TileData tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir, layer)).Where(tile => tile != null))
+                foreach (MapTile tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir, layer)).Where(tile => tile != null))
                 {
-                    neightbors.Add(tile);
+                    neighbor.Add(tile);
                 }
             } else 
             {
-                foreach (TileData tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir)).Where(tile => tile != null))
+                foreach (MapTile tile in Directions.Select(dir => MainManager.currentMap.GetTileFromVector(position + dir)).Where(tile => tile != null))
                 {
-                    neightbors.Add(tile);
+                    neighbor.Add(tile);
                 }
             }
         }
@@ -58,7 +53,7 @@ namespace Client
             float cost = 0f;
             Position simulatedTile = new Position(position.x, position.y, 0);
             float diagonalCostMultiplier = (float)Math.Sqrt(2);
-            while (simulatedTile != other) 
+            while (!simulatedTile.Equals(other)) 
             {
                 bool diagonal = false;
                 if(simulatedTile.x < other.x && simulatedTile.y < other.y) 

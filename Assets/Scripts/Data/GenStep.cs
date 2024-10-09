@@ -22,16 +22,16 @@ public class GrassGenStep : GenStep
             {
                 if (layer.ZLevel > 0)
                 {
-                    foreach (TileData tile in layer.tiles.Values)
+                    foreach (MapTile tile in layer.tiles.Values)
                     {
-                        tile.type = TerrainBase.FindTerrainByID("Dirt");
+                        tile.baseType = TerrainBase.FindTerrainByID("Dirt");
                     }
                 } 
                 else 
                 {
-                    foreach (TileData tile in layer.tiles.Values)
+                    foreach (MapTile tile in layer.tiles.Values)
                     {
-                        tile.type = TerrainBase.FindTerrainByID("Grass");
+                        tile.baseType = TerrainBase.FindTerrainByID("Grass");
                     }
                 }
             }
@@ -47,12 +47,12 @@ public class WaterGenStep : GenStep
         {
             if (layer.ZLevel <= map.zLevels * 0.4)
             {
-                foreach (TileData tile in layer.tiles.Values)
+                foreach (MapTile tile in layer.tiles.Values)
                 {
                     float xCoord = (float)tile.position.x / map.size.x * map.scale + map.offset.x;
                     float yCoord = (float)tile.position.y / map.size.y * map.scale + map.offset.y;
                     float value = Mathf.Clamp(Mathf.PerlinNoise(xCoord * 2, yCoord * 2), 0, 0.999999f);
-                    if (value * (layer.ZLevel + 2) * 0.5 < 0.30) tile.type = TerrainBase.FindTerrainByID("Water");
+                    if (value * (layer.ZLevel + 2) * 0.5 < 0.30) tile.baseType = TerrainBase.FindTerrainByID("Water");
                 }
             }
         }
@@ -66,12 +66,12 @@ public class MagmaGenStep : GenStep
         foreach (MapLayer layer in map.layers.Values)
         {
             if (layer.ZLevel > map.zLevels * 0.70) {
-                foreach (TileData tile in layer.tiles.Values)
+                foreach (MapTile tile in layer.tiles.Values)
                 {
                     float xCoord = (float)tile.position.x / map.size.x * map.scale + map.offset.x;
                     float yCoord = (float)tile.position.y / map.size.y * map.scale + map.offset.y;
                     float value = Mathf.Clamp(Mathf.PerlinNoise(xCoord * 2, yCoord * 2), 0, 0.999999f);
-                    if (value * (layer.ZLevel - map.zLevels - 1) * -1 * 0.25 < 0.30) tile.type = TerrainBase.FindTerrainByID("Magma");
+                    if (value * (layer.ZLevel - map.zLevels - 1) * -1 * 0.25 < 0.30) tile.baseType = TerrainBase.FindTerrainByID("Magma");
                 }
             }
         }
@@ -84,12 +84,12 @@ public class UnderGroundStep : GenStep
     {
         foreach (MapLayer layer in map.layers.Values)
         {
-            foreach (TileData tile in layer.tiles.Values)
+            foreach (MapTile tile in layer.tiles.Values)
             {
                 float xCoord = (float)tile.position.x / map.size.x * map.scale + map.offset.x;
                 float yCoord = (float)tile.position.y / map.size.y * map.scale + map.offset.y;
                 float value = Mathf.Clamp(Mathf.PerlinNoise(xCoord * 3, yCoord * 3), 0, 0.999999f);
-                if (value < layer.ZLevel * 0.2) tile.type = TerrainBase.FindTerrainByID("Stone");
+                if (value < layer.ZLevel * 0.2) tile.baseType = TerrainBase.FindTerrainByID("Stone");
             }
         }
     }
