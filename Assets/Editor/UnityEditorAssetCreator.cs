@@ -27,5 +27,12 @@ namespace Editor
                 "TerrainData.json",
                 JsonUtility.ToJson(new BuildingBase(), true));
         }
+        [MenuItem("Assets/Create/JsonData/Biome")]
+        private static void CreateNewBiomeData()
+        {
+            ProjectWindowUtil.CreateAssetWithContent(
+                "BiomeData.json",
+                JsonUtility.ToJson(new BiomeBase(), true));
+        }
     }
 }

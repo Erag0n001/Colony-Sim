@@ -1,7 +1,11 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Resources;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -18,6 +22,7 @@ namespace Client
             CreatureManager.creatureObject = Resources.Load<GameObject>("Creature");
             TerrainBase.terrainList = LoadAllTerrain();
             CreatureBase.creatureList = LoadAllCreatures();
+            Biome.biomeList = LoadAllBiomes();
         }
 
         private static TerrainBase[] LoadAllTerrain()
@@ -56,6 +61,33 @@ namespace Client
             }
             return terrainData.ToArray();
         }
+
+        private static BiomeBase[] LoadAllBiomes()
+        {
+            TextAsset[] data = Resources.LoadAll<TextAsset>(PathManager.jsonBiome);
+            List<BiomeBase> biomeData = new List<BiomeBase>();
+            foreach (TextAsset rawJson in data)
+            {
+                BiomeBase biome = Serializer.SerializeFromString<BiomeBase>(rawJson.text);
+                foreach (string stepRaw in biome.GenSteps) {
+                    Type type = TypeMapper.GetTypeByName(stepRaw);
+                    if (type != null)
+                    {
+                        object creatureInstance = Activator.CreateInstance(type);
+                        GenStep step = creatureInstance as GenStep;
+                        biome.gensteps.Add(step);
+                    } 
+                    else 
+                    {
+                        Printer.LogError($"Could not find class {stepRaw} while loading {biome.IdName}");
+                    }
+                }
+
+                biomeData.Add(biome);
+            }
+            return biomeData.ToArray();
+        }
+
         public static Sprite CreateSpriteFromTexture(Texture2D texture)
         {
             Sprite result = Sprite.Create(texture,
@@ -69,6 +101,28 @@ namespace Client
             tile.sprite = terrain.texture;
             tile.name = terrain.IdName;
             allTiles.Add(tile);
+        }
+    }
+
+    public static class TypeMapper 
+    {
+        private static Dictionary<string, Type> allTypes = new Dictionary<string, Type>();
+
+        static TypeMapper()
+        {
+            allTypes = new Dictionary<string, Type>();
+            var Types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (var type in Types)
+            {
+                allTypes[type.Name] = type;
+            }
+        }
+
+        public static Type GetTypeByName(string typeName)
+        {
+            if (allTypes.TryGetValue(typeName, out var type))
+                return type;
+            throw new InvalidOperationException($"Unknown creature type: {typeName}");
         }
     }
 }

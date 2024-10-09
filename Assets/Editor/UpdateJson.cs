@@ -12,6 +12,7 @@ namespace Editor {
             UpdateTerrain();
             UpdateCreature();
             UpdateBuildings();
+            UpdateBiome();
         }
         public static void UpdateTerrain()
         {
@@ -38,6 +39,16 @@ namespace Editor {
             {
                 BuildingBase building = Serializer.SerializeFromString<BuildingBase>(json.text);
                 Serializer.SerializeToFile(Path.Combine(pathResources, PathManager.jsonBuilding, building.IdName + ".json"), building);
+            }
+        }
+
+        public static void UpdateBiome()
+        {
+            TextAsset[] jsonRaw = Resources.LoadAll<TextAsset>(PathManager.jsonBuilding);
+            foreach (TextAsset json in jsonRaw)
+            {
+                BiomeBase biome = Serializer.SerializeFromString<BiomeBase>(json.text);
+                Serializer.SerializeToFile(Path.Combine(pathResources, PathManager.jsonBiome, biome.IdName + ".json"), biome);
             }
         }
     }

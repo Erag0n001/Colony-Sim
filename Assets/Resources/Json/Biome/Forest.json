@@ -1,0 +1,5 @@
+{
+    "DisplayName": "Forest",
+    "IdName": "Forest",
+    "GenSteps": ["GrassGenStep", "UnderGroundStep", "WaterGenStep", "MagmaGenStep"]
+}

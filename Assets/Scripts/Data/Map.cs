@@ -15,7 +15,12 @@ namespace Client
         public readonly int seed;
         public List<TerrainBase> terrains;
 
+        public Vector2 offset;
+        public float scale;
+
         public Tile[] tileSetTiles;
+
+        public BiomeBase biome;
 
         private int activeLayer;
         public int ActiveLayer 

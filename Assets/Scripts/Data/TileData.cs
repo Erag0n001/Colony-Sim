@@ -15,10 +15,6 @@ namespace Client
         public Position position = new Position();
         public int id;
 
-        public float wetness;
-        public float elevation;
-
-
         public float WalkSpeed => type.WalkModifier * walkspeedmultipier;
         public float walkspeedmultipier = 1;
         public TerrainBase type;

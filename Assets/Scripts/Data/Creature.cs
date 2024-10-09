@@ -8,7 +8,7 @@ namespace Client
     public class Creature
     {
         public Position position;
-        public Vector3 objectPosition;
+        public Vector3 ObjectPosition => position.ToVector3();
         public Position targetPos;
         public readonly CreatureBase type;
         public float speed;

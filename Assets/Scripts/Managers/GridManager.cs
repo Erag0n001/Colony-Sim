@@ -20,6 +20,7 @@ namespace Client
             rand = new Random();
             if (seed == "") seed = rand.Next(0, 9999999).ToString();
             Map map = new Map(seed, new Vector2(width, height), zLevel);
+            map.biome = Biome.biomeList[0];
             map.terrains = new List<TerrainBase>() { TerrainBase.FindTerrainByID("Grass")};
 
             map.tileSetTiles = GetTiles(map);
@@ -27,18 +28,25 @@ namespace Client
             map.zLevels = zLevel;
 
             Vector2 offset = new Vector2(rand.Next(-999999, 999999), rand.Next(-999999, 999999));
-
-            List<Task> tasks = new List<Task>();
+            map.offset = offset;
+            map.scale = 2;
             for (int z = 0; z < zLevel; z++)
             {
                 int currentZLevel = z;
-                tasks.Add(Task.Run(() => GenerateGrid(map, currentZLevel, offset)));
+                GenerateGrid(map, currentZLevel);
             }
+            List<Task> tasks = new List<Task>();
+            foreach (GenStep step in map.biome.gensteps)
+            {
+                step.Generate(map);
+            }
+
             await Task.WhenAll(tasks);
+
             map.layers = map.layers.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             CreatureManager.SpawnNewCreature();
             }
-        public static void GenerateGrid(Map map, int zLevel, Vector2 offset)
+        public static void GenerateGrid(Map map, int zLevel)
         {
             MapLayer mapLayer = new MapLayer(zLevel);
             Dictionary<Position, TileData> tiles = new Dictionary<Position, TileData>();
@@ -51,13 +59,14 @@ namespace Client
                 {
                     Position pos = new Position(x, y, zLevel);
 
-                    TileData tile = CalculateTile(x, y, zLevel, map, offset);
+                    TileData tile = new TileData(TerrainBase.terrainList[0]);
                     tile.id = idCount++;
                     tile.position = pos;
                     idCount++;
                     tiles.Add(pos, tile);
                 }
             }
+
             mapLayer.tiles = tiles;
             map.layers.Add(zLevel, mapLayer);
             foreach (TileData tile in mapLayer.tiles.Values)
@@ -65,41 +74,6 @@ namespace Client
                 tile.CacheNeighbors(mapLayer);
             }
             UnityMainThreadDispatcher.instance.Enqueue(() => CreateTileMap(mapLayer));
-        }
-
-        private static TileData CalculateTile(int x, int y, int z, Map map, Vector2 offset = new Vector2())
-        {
-            int scale = 2;
-            float xCoord = (float)x / map.size.x * scale + offset.x;
-            float yCoord = (float)y / map.size.y * scale + offset.y;
-
-            TileData tile = new TileData(TerrainBase.terrainList[0]);
-            tile.wetness = CalculateWetness();
-            tile.elevation = CalculateElevation();
-            if (tile.wetness * (z + 2) * 0.5 < 0.30 && z <= map.zLevels * 0.4) tile.type = TerrainBase.FindTerrainByID("Water");
-            else if (tile.wetness * (z - map.zLevels -1) * -1 * 0.25 < 0.30 && z > map.zLevels * 0.8) tile.type = TerrainBase.FindTerrainByID("Magma");
-
-            else if (tile.elevation < z * 0.2) tile.type = TerrainBase.FindTerrainByID("Stone");
-            //else tile.type = map.terrains[Mathf.FloorToInt(tile.elevation)];
-            else if (z > 0) tile.type = TerrainBase.FindTerrainByID("Dirt");
-            else tile.type= TerrainBase.FindTerrainByID("Grass");
-            return tile;
-
-            float CalculateWetness()
-            {
-                float wetness = Mathf.Clamp(Mathf.PerlinNoise(xCoord * 2, yCoord * 2),0, 0.999999f);
-                return wetness;
-            }
-            float CalculateElevation()
-            {
-                float elevation = Mathf.Clamp(Mathf.PerlinNoise(xCoord * 3, yCoord * 3),0, 0.999999f);
-                return elevation;
-            }
-            float CalculateTerrainType() 
-            {
-                float type = Mathf.Clamp(Mathf.PerlinNoise(xCoord, yCoord), 0, 0.999999f) * map.terrains.Count();
-                return type;
-            }
         }
 
         public static void CreateTileMap(MapLayer layer) 

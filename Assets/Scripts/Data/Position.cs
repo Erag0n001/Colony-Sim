@@ -8,6 +8,7 @@ namespace Client
         public int y;
         public int z;
         public Vector3Int ToVector3Int() => new Vector3Int(x,y,0);
+        public Vector3 ToVector3() => new Vector3(x, y, 0);
         public Position(int x, int y, int z)
         {
             this.x = x;
