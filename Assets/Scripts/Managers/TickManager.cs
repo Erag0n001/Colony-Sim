@@ -7,8 +7,8 @@ namespace Client
 {
     public static class TickManager 
     {
-
-        public static int tickPerSecondTarget = 1000;
+        public static readonly int TickPerSecondBase = 10; //Value at 1X speed
+        public static int tickPerSecondTarget = 20;
         public static int tickPerSecond = 0;
         private static bool paused;
 
@@ -55,7 +55,7 @@ namespace Client
                     {
                         foreach (MapLayer layer in MainManager.currentMap.layers.Values)
                         {
-                            foreach (Creature creature in layer.creatures.Values)
+                            foreach (Creature creature in layer.creatures)
                             {
                                 try { creature.Tick(delta); }
                                 catch (Exception e)
@@ -98,6 +98,17 @@ namespace Client
 
         public static void LongTick()
         {
+            foreach (MapLayer layer in MainManager.currentMap.layers.Values)
+            {
+                foreach (Creature creature in layer.creatures)
+                {
+                    try { creature.LongTick(); }
+                    catch (Exception e)
+                    {
+                        Printer.LogError($"Error long ticking {creature.baseType.IdName} with name {creature.displayName}\n{e}");
+                    }
+                }
+            }
         }
     }
 }

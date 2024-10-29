@@ -13,7 +13,7 @@ namespace Client
         public readonly int ZLevel;
 
         public Dictionary<Position, MapTile> tiles = new Dictionary<Position, MapTile>();
-        public Dictionary<Position, Creature> creatures = new Dictionary<Position, Creature>();
+        public List<Creature> creatures = new List<Creature>();
         public Tilemap tilemap;
 
         public MapTile GetTileFromVector(Position vector) => tiles.TryGetValue(vector, out MapTile tile) ? tile : null;

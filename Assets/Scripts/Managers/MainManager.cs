@@ -12,7 +12,7 @@ namespace Client
     {
         public static Map currentMap;
 
-        public static int framePerSecondTarget = -1;
+        public static int framePerSecondTarget = 120;
 
         public static void Startup() 
         {
@@ -24,6 +24,6 @@ namespace Client
             {
                 TickManager.Paused = false;
             });
-            }
+        }
     }
 }

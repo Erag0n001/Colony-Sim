@@ -49,9 +49,6 @@ namespace Client
             if (layer != null)
             {
                 return layer.GetTileFromVector(vector);
-            } else 
-            {
-                Printer.LogError($"Layer {vector.z} did not exist");
             }
             return null;
         }

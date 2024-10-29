@@ -31,6 +31,11 @@ namespace Client {
                             break;
                     }
                 }
+                if (Input.GetKeyDown(KeyCode.Escape)) 
+                {
+                    Printer.LogWarning("pausing");
+                    TickManager.Paused = true;
+                }
             }
             for (int i = 0; i < keys.Length; i++)
             {

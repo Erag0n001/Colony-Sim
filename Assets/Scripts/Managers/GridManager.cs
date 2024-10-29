@@ -14,7 +14,7 @@ namespace Client
         public static GameObject tileObject;
 
         public static Random rand;
-        public static async void GenerateMap(int width = 60, int height = 60, int zLevel = 10, string seed = "") 
+        public static async void GenerateMap(int width = 60, int height = 60, int zLevel = 2, string seed = "") 
         {
             rand = new Random();
             if (seed == "") seed = rand.Next(0, 9999999).ToString();
@@ -38,10 +38,17 @@ namespace Client
                 step.Generate(map);
             }
 
+            foreach (MapLayer layer in map.layers.Values)
+            {
+                foreach (MapTile tile in layer.tiles.Values)
+                {
+                    tile.CacheNeighbors(layer);
+                }
+            }
+
             await Task.WhenAll(tasks);
 
             map.layers = map.layers.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            CreatureManager.SpawnNewCreature();
             }
         public static void GenerateGrid(Map map, int zLevel)
         {
@@ -65,10 +72,6 @@ namespace Client
 
             mapLayer.tiles = tiles;
             map.layers.Add(zLevel, mapLayer);
-            foreach (MapTile tile in mapLayer.tiles.Values)
-            {
-                tile.CacheNeighbors(mapLayer);
-            }
             UnityMainThreadDispatcher.instance.Enqueue(() => CreateTileMap(mapLayer));
         }
 
@@ -77,8 +80,7 @@ namespace Client
             GameObject tileMapObject = new GameObject();
             tileMapObject.transform.SetParent(GameObject.Find("GridManager/Grid").transform);
             tileMapObject.name = layer.ZLevel.ToString();
-            tileMapObject.transform.position = new Vector3(0, 0, 0);
-
+            tileMapObject.transform.position = tileMapObject.transform.parent.position;
             Tilemap tileMap = tileMapObject.AddComponent<Tilemap>();
             foreach (MapTile tile in layer.tiles.Values) 
             {

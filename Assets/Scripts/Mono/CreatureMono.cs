@@ -10,36 +10,28 @@ namespace Client
     {
         public Creature creature;
 
-        public Map currentMap;
+        public Vector3 RealPosition => creature.position.gameObjectPosition;
 
-        public float count;
+        public int layer => creature.position.z;
 
-        public Vector3Int RealPosition => creature.position.ToVector3Int();
-
-        public Vector3Int TargetPosition => creature.targetPos.ToVector3Int();
-
-        public bool isMoving;
-
+        private MeshRenderer renderer;
+        private void Start()
+        {
+            renderer = gameObject.GetComponent<MeshRenderer>();
+        }
         public void Update()
         {
-            if(RealPosition != TargetPosition && isMoving == false) 
+            if (transform.position != RealPosition)
             {
-                StartCoroutine(Lerp());
+                gameObject.transform.position = RealPosition;
             }
-        }
-
-        public IEnumerator Lerp() 
-        {
-            Vector3 startRot = RealPosition;
-
-            float currentTime = 0f;
-            float endTime = 0.250f;
-            while (currentTime < endTime)
-            {
-                currentTime += Time.deltaTime;
-                transform.position = Vector3.Lerp(startRot, TargetPosition, currentTime / endTime);
-                yield return null;
-            }
+            //if (MainManager.currentMap.ActiveLayer != layer)
+            //{
+            //    renderer.enabled = false;
+            //} else 
+            //{
+            //    renderer.enabled = true;
+            //}
         }
     }
 }

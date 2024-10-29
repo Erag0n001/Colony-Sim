@@ -6,6 +6,7 @@ namespace Client
     {
         private void Awake()
         {
+            DontDestroyOnLoad(this.gameObject);
             MainManager.Startup();
         }
 
